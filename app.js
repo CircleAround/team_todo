@@ -104,7 +104,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV === 'test' ? 'secret' : null);
+const sessionSecret = process.env.SESSION_SECRET || (
+  process.env.NODE_ENV === 'test' ? require('crypto').randomBytes(64).toString('hex') : null
+);
 if(!sessionSecret) {
   throw new Error('[ERROR]Require environment value of SESSION_SECRET!');
 }
@@ -112,7 +114,11 @@ app.use(session({
   secret: sessionSecret,
   store: store,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'test' ? false : process.env.SSL_ENABLED !== 'false',
+    httpOnly: true
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
