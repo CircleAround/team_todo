@@ -25,4 +25,6 @@ route.resource('teams', { controller: 'teams_controller', only: ['create', 'stor
 const teamRoute = route.sub('/teams/:team');
 teamRoute.resource('/tasks', { controller: 'tasks_controller', only: ['create', 'store', 'edit', 'update'] });
 
+teamRoute.resource('/members', { controller: 'members_controller', only: ['index', 'store'] });
+
 module.exports = route.router;
