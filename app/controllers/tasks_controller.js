@@ -6,7 +6,8 @@ class TasksController extends Controller {
   async create(req, res) {
     const task = models.Task.build({});
     const team = await this._team(req);
-    res.render(`tasks/create`, { task, team });
+    const memberUsers = await team.getMemberUsers();
+    res.render(`tasks/create`, { task, team, memberUsers });
   }
 
   // POST /
@@ -15,7 +16,9 @@ class TasksController extends Controller {
     const task = models.Task.build({
       teamId: team.id,
       title: req.body.title,
-      body: req.body.body
+      body: req.body.body,
+      creatorId: req.user.id,
+      assigneeId: req.body.assigneeId
     });
     await task.save();
     await req.flash('info', `タスク${task.title}を保存しました`);
@@ -25,13 +28,21 @@ class TasksController extends Controller {
   // GET /:id/edit
   async edit(req, res) {
     const task = await this._task(req);
-    res.render('tasks/edit', { task });
+    const team = await this._team(req);
+    const memberUsers = await team.getMemberUsers();
+    res.render('tasks/edit', { task, memberUsers });
   }
 
   // PUT or PATCH /:id
   async update(req, res) {
     const task = await this._task(req);
-    task.set(req.body);
+    task.set({
+      teamId: team.id,
+      title: req.body.title,
+      body: req.body.body,
+      creatorId: req.user.id,
+      assigneeId: req.body.assigneeId
+    });
     await task.save();
     await req.flash('info', `${task.title}を更新しました`);
 
