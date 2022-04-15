@@ -4,7 +4,8 @@ const models = require('../models');
 class TeamsController extends Controller {
   async show(req, res) {
     const team = await this._team(req);
-    res.render('teams/show', { team });
+    const tasks = await team.getTasks( { order: [['id', 'DESC']] });
+    res.render('teams/show', { team, tasks });
   }
 
   async create(req, res) {

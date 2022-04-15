@@ -22,4 +22,7 @@ adminRoute.resource('users', 'admin/users_controller');
 
 route.resource('teams', { controller: 'teams_controller', only: ['create', 'store', 'show', 'edit', 'update'] });
 
+const teamRoute = route.sub('/teams/:team');
+teamRoute.resource('/tasks', { controller: 'tasks_controller', only: ['create', 'store', 'edit', 'update'] });
+
 module.exports = route.router;
