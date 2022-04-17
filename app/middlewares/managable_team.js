@@ -1,9 +1,10 @@
+const models = require("../models");
+
 module.exports = async function managableTeam(req, res, next) {
-  const member = await req.user.getMember({ where : { teamId: req.params.team, role: 1 } });
-  if ( member.length > 0 ) {
-    return next();
-  } else {
+  const team = await models.Team.findByPk(req.params.team);
+  if (!await team.isManager(req.user)) {
     await req.flash('alert', 'アクセスできません');
     res.redirect('/');
   }
+  return next();
 }; 
