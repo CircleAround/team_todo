@@ -1,5 +1,5 @@
-const Controller = require('./controller');
-const models = require('../models');
+const Controller = require('../controller');
+const models = require('../../models');
 
 class TasksController extends Controller {
   // GET /create
@@ -7,7 +7,7 @@ class TasksController extends Controller {
     const task = models.Task.build({});
     const team = await this._team(req);
     const memberUsers = await team.getMemberUsers();
-    res.render(`tasks/create`, { task, team, memberUsers });
+    res.render(`manager/tasks/create`, { task, team, memberUsers });
   }
 
   // POST /
@@ -22,7 +22,7 @@ class TasksController extends Controller {
     });
     await task.save();
     await req.flash('info', `タスク${task.title}を保存しました`);
-    res.redirect(`/teams/${team.id}`);
+    res.redirect(`/manager/teams/${team.id}`);
   }
 
   // GET /:id/edit
@@ -30,12 +30,13 @@ class TasksController extends Controller {
     const task = await this._task(req);
     const team = await this._team(req);
     const memberUsers = await team.getMemberUsers();
-    res.render('tasks/edit', { task, memberUsers });
+    res.render('manager/tasks/edit', { task, memberUsers });
   }
 
   // PUT or PATCH /:id
   async update(req, res) {
     const task = await this._task(req);
+    const team = await this._team(req);
     task.set({
       teamId: team.id,
       title: req.body.title,
@@ -46,7 +47,7 @@ class TasksController extends Controller {
     await task.save();
     await req.flash('info', `${task.title}を更新しました`);
 
-    res.redirect(`/teams/${task.teamId}`);
+    res.redirect(`/manager/teams/${task.teamId}`);
   }
 
   async _team(req) {
