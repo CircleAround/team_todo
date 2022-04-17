@@ -1,0 +1,24 @@
+mixin task_form(action, method, task, memberUsers, err)
+  form.box(action=action, method="post")
+    _csrf
+    _method=method
+
+    - if(err)
+      ul.errors
+        each error in err.errors
+          li= error.message
+
+    div
+      label(for='title') タイトル
+      input#title(name="title", value!=task.title)
+    div
+      label(for='body') 内容
+      textarea#body(name="body") #{task.body}
+    div
+      lavel(for='assigneeId') 担当者
+      select#assigneeId(name="assigneeId")
+        each memberUser in memberUsers
+          option(value!=memberUser.id, selected=(task.assigneeId === memberUser.id)) #{memberUser.displayName}
+
+    div.actions
+      input(type="submit")
