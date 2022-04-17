@@ -20,11 +20,13 @@ route.resource('examples', 'examples_controller');
 const adminRoute = route.sub('/admin', forceLogin, forceAdmin);
 adminRoute.resource('users', 'admin/users_controller');
 
-route.resource('teams', { controller: 'teams_controller', only: ['create', 'store', 'show', 'edit', 'update'] });
+route.resource('teams', forceLogin, { controller: 'teams_controller', only: ['create', 'store'] });
 
-const teamRoute = route.sub('/teams/:team');
-teamRoute.resource('/tasks', { controller: 'tasks_controller', only: ['create', 'store', 'edit', 'update'] });
+const managerRoute = route.sub('/manager', forceLogin);
+managerRoute.resource('teams', { controller: 'manager/teams_controller', only: ['show', 'edit', 'update'] });
 
-teamRoute.resource('/members', { controller: 'members_controller', only: ['index', 'store'] });
+const managerTeamRoute = route.sub('/manager/teams/:team');
+managerTeamRoute.resource('tasks', { controller: 'manager/tasks_controller', only: ['create', 'store', 'edit', 'update'] });
+managerTeamRoute.resource('members', { controller: 'manager/members_controller', only: ['index', 'store'] });
 
 module.exports = route.router;
