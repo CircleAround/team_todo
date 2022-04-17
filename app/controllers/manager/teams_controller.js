@@ -1,3 +1,4 @@
+const { ValidationError } = require('sequelize');
 const Controller = require('../controller');
 const models = require('../../models');
 
@@ -33,10 +34,18 @@ class TeamsController extends Controller {
 
   async update(req, res) {
     const team = await this._team(req);
-    team.set(req.body);
-    await team.save();
-    await req.flash('info', `${team.name}に更新しました`);
-    res.redirect(`/manager/teams/${team.id}/edit`);
+    try {
+      team.set(req.body);
+      await team.save();
+      await req.flash('info', `${team.name}に更新しました`);
+      res.redirect(`/manager/teams/${team.id}/edit`);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        res.render('manager/teams/edit', { team, err });
+      } else {
+        throw err;
+      }
+    }  
   }
 
   async _team(req) {

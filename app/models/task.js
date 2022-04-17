@@ -31,8 +31,28 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    title: DataTypes.STRING,
-    body: DataTypes.STRING,
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'タイトルは空ではいけません'
+        },
+        len: {
+          msg: 'タイトルは10文字未満です', // 1 ~ 9
+          args: [0, 9]
+        }
+      }
+    },
+    body: {
+      type: DataTypes.STRING,
+      validate: {
+        len: {
+          msg: '本文は30文字未満です', // 0 ~ 29
+          args: [0, 29]
+        }
+      }
+    },
     status: DataTypes.INTEGER,
     creatorId: {
       type: DataTypes.INTEGER,
